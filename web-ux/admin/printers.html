@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打印机管理 - 超级打印</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .ios-status-bar {
+            height: 44px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+        }
+        .ios-nav-bar {
+            height: 83px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .printer-card {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-online {
+            background: #D1FAE5;
+            color: #059669;
+        }
+        .status-offline {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .status-warning {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+        .action-button {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .action-button:hover {
+            opacity: 0.9;
+        }
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: #E5E7EB;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: #007AFF;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- iOS 状态栏 -->
+    <div class="ios-status-bar">
+        <div class="flex items-center">
+            <i class="fas fa-signal"></i>
+            <span class="ml-1">中国移动</span>
+        </div>
+        <div>9:41</div>
+        <div class="flex items-center">
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="ios-nav-bar">
+        <div class="flex items-end justify-between px-4 pb-3">
+            <div class="flex items-center">
+                <button class="text-blue-500 mr-3">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h1 class="text-2xl font-bold">打印机管理</h1>
+            </div>
+            <button class="text-blue-500">
+                <i class="fas fa-plus text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <main class="px-4 pb-8">
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-white rounded-xl p-4">
+                <div class="text-sm text-gray-500">打印机总数</div>
+                <div class="text-2xl font-bold mt-1">3</div>
+            </div>
+            <div class="bg-white rounded-xl p-4">
+                <div class="text-sm text-gray-500">在线设备</div>
+                <div class="text-2xl font-bold mt-1">2</div>
+            </div>
+        </div>
+
+        <!-- 打印机列表 -->
+        <div class="space-y-4">
+            <!-- 打印机1 -->
+            <div class="printer-card">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="flex items-center">
+                                <h3 class="font-medium">HP M1136 #01</h3>
+                                <span class="status-badge status-online ml-2">在线</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">图书馆一楼</p>
+                        </div>
+                        <button class="text-gray-400">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 状态信息 -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">纸张余量</div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 75%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">75%</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">墨盒余量</div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 60%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">60%</div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="flex space-x-2">
+                        <button class="action-button bg-blue-500 text-white flex-1">
+                            远程控制
+                        </button>
+                        <button class="action-button bg-gray-200 text-gray-600 flex-1">
+                            暂停使用
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 打印机2 -->
+            <div class="printer-card">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="flex items-center">
+                                <h3 class="font-medium">HP M1136 #02</h3>
+                                <span class="status-badge status-warning ml-2">缺纸</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">图书馆一楼</p>
+                        </div>
+                        <button class="text-gray-400">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 状态信息 -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">纸张余量</div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill bg-yellow-500" style="width: 10%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">10%</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">墨盒余量</div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 45%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">45%</div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="flex space-x-2">
+                        <button class="action-button bg-blue-500 text-white flex-1">
+                            远程控制
+                        </button>
+                        <button class="action-button bg-gray-200 text-gray-600 flex-1">
+                            暂停使用
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 打印机3 -->
+            <div class="printer-card">
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="flex items-center">
+                                <h3 class="font-medium">HP M1136 #03</h3>
+                                <span class="status-badge status-offline ml-2">离线</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">图书馆一楼</p>
+                        </div>
+                        <button class="text-gray-400">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- 状态信息 -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">纸张余量</div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 90%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">90%</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 mb-1">墨盒余量</div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" style="width: 80%"></div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">80%</div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="flex space-x-2">
+                        <button class="action-button bg-blue-500 text-white flex-1">
+                            远程控制
+                        </button>
+                        <button class="action-button bg-gray-200 text-gray-600 flex-1">
+                            重新连接
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部提示 -->
+    <div class="fixed bottom-8 left-6 right-6">
+        <div class="bg-blue-50 rounded-xl p-4 flex items-center">
+            <i class="fas fa-info-circle text-blue-500 text-xl mr-3"></i>
+            <div class="flex-1">
+                <h3 class="text-sm font-medium text-blue-900">系统提醒</h3>
+                <p class="text-xs text-blue-700 mt-1">HP M1136 #02 纸张余量不足，请及时补充</p>
+            </div>
+            <button class="text-blue-500">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</body>
+</html> 

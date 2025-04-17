@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>超级打印 - 原型展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .prototype-container {
+            width: 390px; /* iPhone 15 Pro width */
+            height: 844px; /* iPhone 15 Pro height */
+            border-radius: 55px;
+            overflow: hidden;
+            position: relative;
+            background: #fff;
+            border: 12px solid #1a1a1a;
+        }
+        .prototype-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+        .prototype-label {
+            position: absolute;
+            top: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .ios-status-bar {
+            height: 44px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto py-4 px-4">
+            <h1 class="text-2xl font-bold text-gray-900">超级打印服务 - 原型展示</h1>
+        </div>
+    </header>
+
+    <main class="prototype-grid">
+        <!-- 用户端界面 -->
+        <div class="relative">
+            <div class="prototype-label">登录/注册</div>
+            <div class="prototype-container">
+                <iframe src="user/login.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">首页</div>
+            <div class="prototype-container">
+                <iframe src="user/home.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">打印配置</div>
+            <div class="prototype-container">
+                <iframe src="user/print-config.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">订单确认</div>
+            <div class="prototype-container">
+                <iframe src="user/order-confirm.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">订单列表</div>
+            <div class="prototype-container">
+                <iframe src="user/orders.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">订单详情</div>
+            <div class="prototype-container">
+                <iframe src="user/order-detail.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">个人中心</div>
+            <div class="prototype-container">
+                <iframe src="user/profile.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <!-- 管理端界面 -->
+        <div class="relative">
+            <div class="prototype-label">管理员登录</div>
+            <div class="prototype-container">
+                <iframe src="admin/login.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">订单管理</div>
+            <div class="prototype-container">
+                <iframe src="admin/orders.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">打印机管理</div>
+            <div class="prototype-container">
+                <iframe src="admin/printers.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+
+        <div class="relative">
+            <div class="prototype-label">扫码验证</div>
+            <div class="prototype-container">
+                <iframe src="admin/scan.html" frameborder="0" width="100%" height="100%"></iframe>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

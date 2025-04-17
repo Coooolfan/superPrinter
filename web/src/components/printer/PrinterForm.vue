@@ -1,0 +1,80 @@
+<template>
+  <van-form @submit="onSubmit">
+    <van-cell-group inset>
+      <van-field
+        v-model="formState.printerName"
+        name="printerName"
+        label="打印机名称"
+        placeholder="请输入打印机名称"
+        :rules="[{ required: true, message: '请输入打印机名称' }]"
+      />
+      <van-field
+        v-model="formState.paperCount"
+        name="paperCount"
+        label="纸张数量"
+        type="digit"
+        placeholder="请输入纸张数量"
+        :rules="[{ required: true, message: '请输入纸张数量' }]"
+      />
+      <van-field name="status" label="打印机状态">
+        <template #input>
+          <van-radio-group v-model="formState.status" direction="horizontal">
+            <van-radio name="ONLINE">在线</van-radio>
+            <van-radio name="OFFLINE">离线</van-radio>
+            <van-radio name="OUT_OF_PAPER">缺纸</van-radio>
+          </van-radio-group>
+        </template>
+      </van-field>
+    </van-cell-group>
+    <div class="mt-4 px-4">
+      <van-button round block type="primary" native-type="submit">
+        {{ isEdit ? '更新' : '添加' }}
+      </van-button>
+    </div>
+  </van-form>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, defineProps, defineEmits, watchEffect } from 'vue'
+import { PrinterResource } from '@/api/printer'
+
+const props = defineProps<{
+  printer?: PrinterResource
+  isEdit: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'submit', printer: PrinterResource): void
+}>()
+
+const formState = reactive<PrinterResource>({
+  printerName: '',
+  paperCount: 0,
+  status: 'ONLINE',
+})
+
+// 编辑模式下，填充表单数据
+watchEffect(() => {
+  if (props.printer && props.isEdit) {
+    formState.printerName = props.printer.printerName
+    formState.paperCount = props.printer.paperCount
+    formState.status = props.printer.status
+  }
+})
+
+// 提交表单
+const onSubmit = () => {
+  const printerData: PrinterResource = {
+    printerName: formState.printerName,
+    paperCount: Number(formState.paperCount),
+    status: formState.status,
+  }
+
+  // 如果是编辑模式，保留原有的printerId
+  if (props.isEdit && props.printer?.printerId) {
+    printerData.printerId = props.printer.printerId
+  }
+
+  emit('submit', printerData)
+}
+</script>

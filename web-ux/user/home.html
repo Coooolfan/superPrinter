@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页 - 超级打印</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .ios-status-bar {
+            height: 44px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+        }
+        .ios-nav-bar {
+            height: 83px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .ios-tab-bar {
+            height: 83px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e5e5e5;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        .upload-area {
+            border: 2px dashed #e5e5e5;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            background: #f9fafb;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #007AFF;
+            background: #f0f7ff;
+        }
+        .quick-action {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .quick-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- iOS 状态栏 -->
+    <div class="ios-status-bar">
+        <div class="flex items-center">
+            <i class="fas fa-signal"></i>
+            <span class="ml-1">中国移动</span>
+        </div>
+        <div>9:41</div>
+        <div class="flex items-center">
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="ios-nav-bar flex items-end justify-between px-4 pb-3">
+        <h1 class="text-2xl font-bold">超级打印</h1>
+        <a href="#" class="text-blue-500">
+            <i class="fas fa-bell text-xl"></i>
+        </a>
+    </div>
+
+    <!-- 主要内容 -->
+    <main class="px-4 pb-24">
+        <!-- 搜索栏 -->
+        <div class="relative mt-4 mb-6">
+            <input type="search" 
+                   placeholder="搜索文件或订单" 
+                   class="w-full bg-white rounded-full py-3 px-5 pl-12 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+
+        <!-- 上传区域 -->
+        <div class="upload-area mb-8">
+            <input type="file" id="file-upload" class="hidden" multiple>
+            <label for="file-upload" class="cursor-pointer">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-cloud-upload-alt text-blue-500 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">点击或拖拽文件上传</h3>
+                <p class="text-gray-500 text-sm">支持 PDF、Word、图片等格式</p>
+            </label>
+        </div>
+
+        <!-- 快捷操作 -->
+        <h2 class="text-lg font-semibold mb-4">快捷操作</h2>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="quick-action">
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-copy text-purple-500"></i>
+                </div>
+                <h3 class="font-medium">复印</h3>
+                <p class="text-xs text-gray-500 mt-1">扫描并打印</p>
+            </div>
+            <div class="quick-action">
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-image text-green-500"></i>
+                </div>
+                <h3 class="font-medium">照片打印</h3>
+                <p class="text-xs text-gray-500 mt-1">高质量照片</p>
+            </div>
+        </div>
+
+        <!-- 最近打印 -->
+        <h2 class="text-lg font-semibold mb-4">最近打印</h2>
+        <div class="space-y-4">
+            <div class="bg-white p-4 rounded-xl shadow-sm flex items-center">
+                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="far fa-file-pdf text-red-500 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-medium">项目报告.pdf</h3>
+                    <p class="text-sm text-gray-500">2024-03-20 14:30</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm flex items-center">
+                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="far fa-file-word text-blue-500 text-xl"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-medium">会议记录.docx</h3>
+                    <p class="text-sm text-gray-500">2024-03-19 16:45</p>
+                </div>
+                <i class="fas fa-chevron-right text-gray-400"></i>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部标签栏 -->
+    <div class="ios-tab-bar grid grid-cols-4 items-center px-6">
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-home text-blue-500 text-xl"></i>
+            <span class="text-xs mt-1 text-blue-500">首页</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-file-alt text-gray-400 text-xl"></i>
+            <span class="text-xs mt-1 text-gray-400">订单</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-bell text-gray-400 text-xl"></i>
+            <span class="text-xs mt-1 text-gray-400">通知</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-user text-gray-400 text-xl"></i>
+            <span class="text-xs mt-1 text-gray-400">我的</span>
+        </a>
+    </div>
+</body>
+</html> 

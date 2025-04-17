@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 超级打印</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .ios-status-bar {
+            height: 44px;
+            background: #000;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+        }
+        .ios-nav-bar {
+            height: 83px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e5e5e5;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .ios-tab-bar {
+            height: 83px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #e5e5e5;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        .input-style {
+            background: rgba(118, 118, 128, 0.12);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 17px;
+            line-height: 22px;
+            width: 100%;
+            border: none;
+            margin-bottom: 16px;
+        }
+        .btn-primary {
+            background: #007AFF;
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            font-weight: 600;
+            width: 100%;
+            text-align: center;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- iOS 状态栏 -->
+    <div class="ios-status-bar">
+        <div class="flex items-center">
+            <i class="fas fa-signal"></i>
+            <span class="ml-1">中国移动</span>
+        </div>
+        <div>9:41</div>
+        <div class="flex items-center">
+            <i class="fas fa-battery-full"></i>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <div class="ios-nav-bar flex items-end px-4 pb-3">
+        <h1 class="text-2xl font-bold">登录</h1>
+    </div>
+
+    <!-- 主要内容 -->
+    <main class="px-6 pt-8">
+        <div class="mb-8">
+            <img src="https://images.unsplash.com/photo-1605496036006-fa36378ca4ab?w=800" alt="Logo" class="w-24 h-24 mx-auto rounded-2xl shadow-lg">
+        </div>
+
+        <form class="space-y-4">
+            <div>
+                <input type="tel" placeholder="手机号码" class="input-style" />
+            </div>
+            <div class="relative">
+                <input type="password" placeholder="密码" class="input-style" />
+            </div>
+            
+            <div class="flex justify-between text-sm">
+                <label class="flex items-center">
+                    <input type="checkbox" class="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600">
+                    <span class="text-gray-600">记住我</span>
+                </label>
+                <a href="#" class="text-blue-600">忘记密码？</a>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                登录
+            </button>
+
+            <div class="text-center mt-6">
+                <span class="text-gray-600">还没有账号？</span>
+                <a href="#" class="text-blue-600 font-semibold">立即注册</a>
+            </div>
+        </form>
+    </main>
+
+    <!-- 底部标签栏 -->
+    <div class="ios-tab-bar grid grid-cols-4 items-center px-6">
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-home text-blue-500 text-xl"></i>
+            <span class="text-xs mt-1 text-blue-500">首页</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-file-alt text-gray-400 text-xl"></i>
+            <span class="text-xs mt-1 text-gray-400">订单</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-bell text-gray-400 text-xl"></i>
+            <span class="text-xs mt-1 text-gray-400">通知</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+            <i class="fas fa-user text-gray-400 text-xl"></i>
+            <span class="text-xs mt-1 text-gray-400">我的</span>
+        </a>
+    </div>
+</body>
+</html> 
