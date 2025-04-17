@@ -36,7 +36,22 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     restart: unless-stopped
 
+  minio:
+    image: minio/minio:latest
+    container_name: superprinter-minio
+    environment:
+      MINIO_ROOT_USER: superprinter
+      MINIO_ROOT_PASSWORD: superprinter
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
 volumes:
   mysql_data:
   redis_data:
   rabbitmq_data:
+  minio_data:
