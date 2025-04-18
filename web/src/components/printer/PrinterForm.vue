@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineProps, defineEmits, watchEffect } from 'vue'
-import { PrinterResource } from '@/api/printer'
+import { reactive, defineProps, defineEmits, watchEffect } from 'vue'
+import { type PrinterResource } from '@/api/printer'
 
 const props = defineProps<{
   printer?: PrinterResource
