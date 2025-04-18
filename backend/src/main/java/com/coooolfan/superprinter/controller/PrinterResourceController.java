@@ -1,11 +1,10 @@
 package com.coooolfan.superprinter.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import com.coooolfan.superprinter.service.PrinterResourceService;
 import com.coooolfan.superprinter.vo.response.PrinterResourceResponse;
-import jakarta.websocket.server.PathParam;
 
 import com.coooolfan.superprinter.entity.PrinterResource;
-import com.coooolfan.superprinter.service.PrinterResourceService;
 import com.coooolfan.superprinter.vo.PrinterResourceVO;
 import com.coooolfan.superprinter.vo.response.MessageResponse;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 打印机资源控制器

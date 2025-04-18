@@ -1,36 +1,80 @@
 package com.coooolfan.superprinter.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.coooolfan.superprinter.entity.User;
+import com.coooolfan.superprinter.enums.UserRole;
+import com.coooolfan.superprinter.exception.BusinessException;
+import com.coooolfan.superprinter.mapper.UserMapper;
+import com.coooolfan.superprinter.util.IdGenerator;
+import com.coooolfan.superprinter.util.PasswordUtils;
 import com.coooolfan.superprinter.vo.RegisterVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
- * 用户服务接口
+ * 用户服务实现类
  */
-public interface UserService extends IService<User> {
+@Service
+public class UserService extends ServiceImpl<UserMapper, User>  {
 
-    /**
-     * 用户登录
-     *
-     * @param username 用户名
-     * @param password 密码
-     * @return 用户信息
-     */
-    User login(String username, String password);
+    @Autowired
+    private IdGenerator idGenerator;
 
-    /**
-     * 用户注册
-     *
-     * @param registerVO 注册信息
-     * @return 用户ID
-     */
-    Long register(RegisterVO registerVO);
+    @Autowired
+    private PasswordUtils passwordUtils;
 
-    /**
-     * 根据用户名查询用户
-     *
-     * @param username 用户名
-     * @return 用户信息
-     */
-    User getByUsername(String username);
+    public User login(String username, String password) {
+        if (!StringUtils.hasText(username) || !StringUtils.hasText(password)) {
+            throw new BusinessException("用户名或密码不能为空");
+        }
+
+        // 根据用户名查询用户
+        User user = getByUsername(username);
+        if (user == null) {
+            return null;
+        }
+
+        // 校验密码
+        if (!passwordUtils.matches(password, user.getPassword())) {
+            return null;
+        }
+
+        return user;
+    }
+
+    public Long register(RegisterVO registerVO) {
+        // 参数校验
+        if (!StringUtils.hasText(registerVO.getUsername())) {
+            throw new BusinessException("用户名不能为空");
+        }
+        if (!StringUtils.hasText(registerVO.getPassword())) {
+            throw new BusinessException("密码不能为空");
+        }
+
+        // 检查用户名是否已存在
+        User existUser = getByUsername(registerVO.getUsername());
+        if (existUser != null) {
+            throw new BusinessException("用户名已存在");
+        }
+
+        // 创建用户
+        User user = new User();
+        user.setUserId(idGenerator.nextId());
+        user.setUsername(registerVO.getUsername().toLowerCase());
+        user.setPassword(passwordUtils.encode(registerVO.getPassword()));
+        user.setRole(UserRole.USER.getCode());
+
+        // 保存用户
+        save(user);
+
+        return user.getUserId();
+    }
+
+    public User getByUsername(String username) {
+        return getOne(new LambdaQueryWrapper<User>()
+                .eq(User::getUsername, username.toLowerCase()) // 即使不加toLowerCase，Mysql默认也不区分大小写
+                .last("LIMIT 1"));
+    }
 }

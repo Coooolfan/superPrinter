@@ -55,6 +55,19 @@ const router = createRouter({
         },
       ],
     },
+    // 订单创建流程路由 - 独立页面，不带底部导航栏
+    {
+      path: '/order-step1',
+      name: 'OrderStep1',
+      component: () => import('@/views/order/OrderStep1View.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/order-step2',
+      name: 'OrderStep2',
+      component: () => import('@/views/order/OrderStep2View.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 

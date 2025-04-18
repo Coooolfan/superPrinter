@@ -5,9 +5,10 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Fileinfo {
+public class MinioObject {
     String filename;
 
     Boolean directory;
 
+    Long size;
 }
