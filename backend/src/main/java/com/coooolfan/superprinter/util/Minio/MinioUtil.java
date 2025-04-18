@@ -78,9 +78,7 @@ public class MinioUtil {
     public List<String> listBuckets() throws Exception {
         List<Bucket> list = minioClient.listBuckets();
         List<String> names = new ArrayList<>();
-        list.forEach(b -> {
-            names.add(b.name());
-        });
+        list.forEach(b -> names.add(b.name()));
         return names;
     }
 
