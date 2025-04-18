@@ -1,15 +1,18 @@
 package com.coooolfan.superprinter.config;
 
-import cn.dev33.satoken.context.SaHolder;
-import cn.dev33.satoken.filter.SaServletFilter;
+import cn.dev33.satoken.fun.strategy.SaCorsHandleFunction;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
-import cn.dev33.satoken.util.SaResult;
 
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -23,49 +26,44 @@ public class WebMvcConfigurerImpl implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 拦截器，打开注解式鉴权功能
         registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**");
+        // 添加请求日志拦截器
+        registry.addInterceptor(new RequestLogInterceptor()).addPathPatterns("/**");
+    }
+
+    @Bean
+    public SaCorsHandleFunction corsHandle() {
+        return (req, res, sto) -> {
+            res
+                    .setHeader("Access-Control-Allow-Origin", "*") // 允许指定域访问跨域资源
+                    .setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE") // 允许所有请求方式
+                    .setHeader("Access-Control-Max-Age", "3600") // 有效时间
+                    .setHeader("Access-Control-Allow-Headers", "*"); // 允许的header参数
+
+            // 如果是预检请求，则立即返回到前端
+            SaRouter.match(SaHttpMethod.OPTIONS).free(r -> System.out.println("--------OPTIONS预检请求，不做处理")).back();
+        };
     }
 
     /**
-     * 注册 [Sa-Token 全局过滤器]
+     * 请求日志拦截器
      */
-    @Bean
-    public SaServletFilter getSaServletFilter() {
-        return new SaServletFilter()
+    @Slf4j
+    public static class RequestLogInterceptor implements HandlerInterceptor {
 
-                // 指定 [拦截路由] 与 [放行路由]
-                .addInclude("/**").addExclude("/favicon.ico")
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+            String requestURI = request.getRequestURI();
+            String method = request.getMethod();
+            log.info("收到请求: {} {}", method, requestURI);
+            return true;
+        }
 
-                // 认证函数: 每次请求执行
-                .setAuth(obj -> {
-//                    SaManager.getLog().debug("----- 请求path={}  提交token={}", SaHolder.getRequest().getRequestPath(), StpUtil.getTokenValue());
-                })
-
-                // 异常处理函数：每次认证函数发生异常时执行此函数
-                .setError(e -> SaResult.error(e.getMessage()))
-
-                // 前置函数：在每次认证函数之前执行
-                .setBeforeAuth(obj -> {
-                    SaHolder.getResponse()
-
-                            // ---------- 设置跨域响应头 ----------
-                            // 允许指定域访问跨域资源
-                            .setHeader("Access-Control-Allow-Origin", "*")
-                            // 允许所有请求方式
-                            .setHeader("Access-Control-Allow-Methods", "*")
-                            // 允许的header参数
-                            .setHeader("Access-Control-Allow-Headers", "*")
-                            // 有效时间
-                            .setHeader("Access-Control-Max-Age", "3600")
-                    ;
-
-                    // 如果是预检请求，则立即返回到前端
-                    SaRouter.match(SaHttpMethod.OPTIONS)
-                            .free(r -> {
-//                                System.out.println("--------OPTIONS预检请求，不做处理");
-                            })
-                            .back();
-                })
-                ;
+        @Override
+        public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+            String requestURI = request.getRequestURI();
+            String method = request.getMethod();
+            int status = response.getStatus();
+            log.info("请求完成: {} {} - {}", method, requestURI, status);
+        }
     }
-
 }
