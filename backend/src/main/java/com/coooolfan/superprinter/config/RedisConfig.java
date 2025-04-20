@@ -13,6 +13,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
+    public static final String PREFIX_IDEMPOTENT_COUNT = "idempotent:";
+
     /**
      * 配置自定义RedisTemplate，使用JSON序列化
      */
