@@ -60,31 +60,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 打印参数选择 (简易版) -->
-      <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-        <div class="text-lg font-medium mb-3">基本打印设置</div>
-
-        <div class="mb-4">
-          <div class="mb-2">打印颜色</div>
-          <van-radio-group v-model="printSettings.color" direction="horizontal">
-            <van-radio name="black" class="mr-4">黑白</van-radio>
-            <van-radio name="color">彩色</van-radio>
-          </van-radio-group>
-        </div>
-
-        <div class="mb-4">
-          <div class="mb-2">纸张大小</div>
-          <van-dropdown-menu>
-            <van-dropdown-item v-model="printSettings.paperSize" :options="paperSizeOptions" />
-          </van-dropdown-menu>
-        </div>
-
-        <div>
-          <div class="mb-2">打印份数</div>
-          <van-stepper v-model="printSettings.copies" min="1" max="100" />
-        </div>
-      </div>
     </div>
 
     <!-- 底部操作栏 -->
@@ -102,12 +77,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import type { UploaderFileListItem } from 'vant'
-import { showToast, showLoadingToast, closeToast } from 'vant'
+import { showToast } from 'vant'
 import { getFileUploadPreSign, uploadFileWithPreSign } from '@/api/file'
 import type { FileUploadPreSignVO } from '@/api/file'
+import useOrderFileStore from '@/store/orderFile'
+
+const orderFileStore = useOrderFileStore()
 
 const router = useRouter()
 const fileList = ref<UploaderFileListItem[]>([])
@@ -120,20 +98,6 @@ type FileStatus = 'uploading' | 'success' | 'failed'
 interface CustomFileItem extends UploaderFileListItem {
   customStatus?: FileStatus
 }
-
-// 打印设置
-const printSettings = ref({
-  color: 'black',
-  paperSize: 'A4',
-  copies: 1,
-})
-
-// 纸张大小选项
-const paperSizeOptions = [
-  { text: 'A4', value: 'A4' },
-  { text: 'A5', value: 'A5' },
-  { text: 'B5', value: 'B5' },
-]
 
 // 获取文件类型
 const getFileType = (filename: string): string => {
@@ -187,7 +151,7 @@ const afterRead = async (file: UploaderFileListItem | UploaderFileListItem[]) =>
 
       // 设置为自定义状态
       customFileItem.customStatus = 'success'
-
+      orderFileStore.addOrderFile(response.fileInfo.fileId)
       showToast('文件上传成功')
     }
   } catch (error) {
@@ -238,8 +202,6 @@ const goToNextStep = () => {
   // 保存当前选择的文件和设置
   router.push({
     name: 'OrderStep2',
-    // 可以传递参数到下一步
-    // query: { ... }
   })
 }
 </script>

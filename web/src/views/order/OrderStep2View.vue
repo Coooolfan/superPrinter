@@ -14,32 +14,37 @@
     <div class="p-4">
       <!-- 文件概览 -->
       <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-        <div class="text-lg font-medium mb-3">上传文件 (3)</div>
+        <div class="text-lg font-medium mb-3">已上传文件 ({{ orderFileCount }})</div>
         <div class="flex items-center justify-between py-2">
           <div class="flex items-center">
             <van-icon name="description" size="20" class="mr-2 text-primary" />
-            <span class="text-sm">3个文件</span>
+            <span class="text-sm">{{ orderFileCount }}个文件</span>
           </div>
-          <van-button size="small" plain hairline type="primary" @click="goToStep1"
-            >修改</van-button
-          >
         </div>
       </div>
 
-      <!-- 打印设置概览 -->
+      <!-- 打印参数选择 (简易版) -->
       <div class="bg-white rounded-lg shadow-sm p-4 mb-4">
-        <div class="text-lg font-medium mb-3">打印设置</div>
-        <div class="flex justify-between py-1">
-          <span class="text-gray-600">打印颜色</span>
-          <span>黑白</span>
+        <div class="text-lg font-medium mb-3">基本打印设置</div>
+
+        <div class="mb-4">
+          <div class="mb-2">打印颜色</div>
+          <van-radio-group v-model="printSettings.color" direction="horizontal">
+            <van-radio name="black" class="mr-4">黑白</van-radio>
+            <van-radio name="color">彩色</van-radio>
+          </van-radio-group>
         </div>
-        <div class="flex justify-between py-1">
-          <span class="text-gray-600">纸张大小</span>
-          <span>A4</span>
+
+        <div class="mb-4">
+          <div class="mb-2">纸张大小</div>
+          <van-dropdown-menu>
+            <van-dropdown-item v-model="printSettings.paperSize" :options="paperSizeOptions" />
+          </van-dropdown-menu>
         </div>
-        <div class="flex justify-between py-1">
-          <span class="text-gray-600">打印份数</span>
-          <span>1</span>
+
+        <div>
+          <div class="mb-2">打印份数</div>
+          <van-stepper v-model="printSettings.copies" min="1" max="100" />
         </div>
       </div>
 
@@ -72,13 +77,6 @@
                   </div>
                 </div>
               </van-radio>
-            </div>
-
-            <!-- 打印机详情按钮 -->
-            <div class="mt-2 text-right">
-              <van-button size="mini" plain hairline @click="showPrinterDetails(printer)">
-                详情
-              </van-button>
             </div>
           </div>
         </van-radio-group>
@@ -115,74 +113,35 @@
         </van-button>
       </div>
     </div>
-
-    <!-- 打印机详情弹窗 -->
-    <van-dialog v-model:show="showPrinterDialog" title="打印机详情" :showConfirmButton="false">
-      <div class="p-4" v-if="selectedPrinterDetails">
-        <div class="mb-3">
-          <div class="text-lg font-medium">{{ selectedPrinterDetails.name }}</div>
-          <div class="text-sm text-gray-500">
-            <van-icon name="location-o" /> {{ selectedPrinterDetails.location }}
-          </div>
-        </div>
-
-        <van-divider />
-
-        <div class="mb-2 text-sm">
-          <div class="flex justify-between py-1">
-            <span class="text-gray-600">型号</span>
-            <span>{{ selectedPrinterDetails.model }}</span>
-          </div>
-          <div class="flex justify-between py-1">
-            <span class="text-gray-600">彩色打印</span>
-            <span>{{ selectedPrinterDetails.color ? '支持' : '不支持' }}</span>
-          </div>
-          <div class="flex justify-between py-1">
-            <span class="text-gray-600">双面打印</span>
-            <span>{{ selectedPrinterDetails.duplex ? '支持' : '不支持' }}</span>
-          </div>
-          <div class="flex justify-between py-1">
-            <span class="text-gray-600">支持纸张</span>
-            <span>{{ selectedPrinterDetails.paperSizes.join(', ') }}</span>
-          </div>
-          <div class="flex justify-between py-1">
-            <span class="text-gray-600">状态</span>
-            <span>{{ selectedPrinterDetails.availability ? '空闲' : '忙碌' }}</span>
-          </div>
-        </div>
-
-        <van-divider />
-
-        <div class="py-2">
-          <div class="text-sm font-medium mb-2">价格</div>
-          <div class="text-xs text-gray-600">
-            <div class="flex justify-between py-1">
-              <span>黑白单面</span>
-              <span>¥{{ selectedPrinterDetails.prices.bw }} / 页</span>
-            </div>
-            <div class="flex justify-between py-1">
-              <span>彩色单面</span>
-              <span>¥{{ selectedPrinterDetails.prices.color }} / 页</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </van-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { showSuccessToast } from 'vant'
+import { showSuccessToast, showToast } from 'vant'
+import useOrderFileStore from '@/store/orderFile'
 
+const orderFileStore = useOrderFileStore()
 const router = useRouter()
 const searchPrinter = ref('')
 const selectedPrinter = ref('')
 const remark = ref('')
 const showPrinterDialog = ref(false)
 const selectedPrinterDetails = ref<any>(null)
+// 打印设置
+const printSettings = ref({
+  color: 'black',
+  paperSize: 'A4',
+  copies: 1,
+})
 
+// 纸张大小选项
+const paperSizeOptions = [
+  { text: 'A4', value: 'A4' },
+  { text: 'A5', value: 'A5' },
+  { text: 'B5', value: 'B5' },
+]
 // 模拟打印机数据
 const printers = ref([
   {
@@ -274,15 +233,12 @@ const goBack = () => {
   })
 }
 
-// 返回修改文件
-const goToStep1 = () => {
-  router.push({
-    name: 'OrderStep1',
-  })
-}
-
 // 创建订单
 const createOrder = () => {
+  if (orderFileStore.getOrderFile().length === 0) {
+    showToast('请先上传文件')
+    return
+  }
   // 在真实场景中，这里会调用API创建订单
   console.log('创建订单:', {
     printerId: selectedPrinter.value,
@@ -296,6 +252,10 @@ const createOrder = () => {
   // 跳转到订单列表页
   router.push('/orders')
 }
+
+const orderFileCount = computed(() => {
+  return orderFileStore.getOrderFile().length
+})
 </script>
 
 <style scoped>

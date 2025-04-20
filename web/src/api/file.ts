@@ -14,6 +14,16 @@ export interface FileUploadPreSignVO {
  */
 export interface FileUploadPreSignResponse {
   preSignUrl: string
+  fileInfo: {
+    fileId: number
+    userId: string
+    originalName: string
+    storedName: string
+    fileType: string
+    fileSize: number
+    pageCount: number
+    uploadTime: string
+  }
 }
 
 /**

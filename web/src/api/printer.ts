@@ -15,6 +15,22 @@ export interface PrinterResource {
   status: string
 
   /**
+   * 支持彩色打印
+   */
+  supportColor: boolean
+
+  /**
+   * 支持双面打印
+   */
+  supportDuplex: boolean
+
+  /**
+   * 支持的纸张类型
+   * 例如：A4,A5,Letter,Legal 以逗号分隔
+   */
+  paperType: string
+
+  /**
    * A纸张数量
    */
   paperCount: number

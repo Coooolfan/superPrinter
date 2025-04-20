@@ -2,7 +2,7 @@
   <div class="main-layout">
     <router-view />
     <van-tabbar v-model="active" route>
-      <van-tabbar-item to="/" icon="home-o">首页</van-tabbar-item>
+      <van-tabbar-item to="/home" icon="home-o">首页</van-tabbar-item>
       <van-tabbar-item to="/orders" icon="orders-o">订单</van-tabbar-item>
       <van-tabbar-item v-if="isMerchant" to="/merchant-orders" icon="orders-o"
         >商家订单</van-tabbar-item

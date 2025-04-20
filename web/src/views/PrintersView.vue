@@ -50,6 +50,9 @@ interface Printer {
   printerId: number
   printerName: string
   status: string
+  supportColor: boolean
+  supportDuplex: boolean
+  paperType: string // 以逗号分隔的字符串 A4,A5
   paperCount: number
   createTime: string
   updateTime: string
@@ -98,6 +101,9 @@ const onEditPrinter = (printer: Printer) => {
     printerName: printer.printerName,
     status: printer.status,
     paperCount: printer.paperCount,
+    supportColor: printer.supportColor,
+    supportDuplex: printer.supportDuplex,
+    paperType: printer.paperType
   }
   formVisible.value = true
 }

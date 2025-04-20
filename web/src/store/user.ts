@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { login as loginApi, register as registerApi,info as infoApi } from '@/api/auth'
+import { login as loginApi, register as registerApi, info as infoApi } from '@/api/auth'
 
 export default defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
@@ -22,7 +22,7 @@ export default defineStore('user', () => {
       userInfo.value = {
         userId: data.userId,
         username: data.username,
-        role: data.role
+        role: data.role,
       }
       isLoggedIn.value = true
       localStorage.setItem('token', token.value)
@@ -43,7 +43,7 @@ export default defineStore('user', () => {
     }
   }
 
-  const info = async()=>{
+  const info = async () => {
     try {
       const response = await infoApi()
       console.log(response)
@@ -53,7 +53,7 @@ export default defineStore('user', () => {
       userInfo.value = {
         userId: data.userId,
         username: data.username,
-        role: data.role
+        role: data.role,
       }
       isLoggedIn.value = true
       return true
@@ -77,6 +77,6 @@ export default defineStore('user', () => {
     login,
     register,
     logout,
-    info
+    info,
   }
 })
