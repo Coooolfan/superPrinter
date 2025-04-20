@@ -26,8 +26,8 @@ public class FileInfoService extends ServiceImpl<FileInfoMapper, FileInfo> imple
 
     public FileInfoUploadPreSignResponse getFileInfoUploadPreSign(FileInfoUploadPreSignVO vo) {
         String objectName = UUID.randomUUID().toString();
-        // 拼接上vo.getFileType()的‘/’后的部分
-        objectName += "." + List.of(vo.getFileType().split("/")).getLast();
+        // 拼接上vo.getOriginalName()的‘.’后的部分
+        objectName += "." + List.of(vo.getOriginalName().split("\\.")).getLast();
         String preSignUrl;
         try {
             preSignUrl = minioUtil.getPresignedUploadUrl(objectName, 60 * 10);
@@ -46,6 +46,6 @@ public class FileInfoService extends ServiceImpl<FileInfoMapper, FileInfo> imple
         fileInfo.setPageCount(-1);
 
         fileInfoMapper.insert(fileInfo);
-        return new FileInfoUploadPreSignResponse(preSignUrl);
+        return new FileInfoUploadPreSignResponse(preSignUrl, fileInfo);
     }
 }

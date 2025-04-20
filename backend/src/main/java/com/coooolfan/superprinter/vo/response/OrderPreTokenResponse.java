@@ -1,14 +1,12 @@
 package com.coooolfan.superprinter.vo.response;
 
-import com.coooolfan.superprinter.entity.FileInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
+@Data
 @NoArgsConstructor
-public class FileInfoUploadPreSignResponse {
-    private String preSignUrl;
-    private FileInfo fileInfo;
+public class OrderPreTokenResponse {
+    private String token;
 }

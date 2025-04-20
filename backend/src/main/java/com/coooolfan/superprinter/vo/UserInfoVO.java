@@ -24,14 +24,4 @@ public class UserInfoVO {
      * 用户角色
      */
     private Integer role;
-
-    /**
-     * 角色名称
-     */
-    private String roleName;
-
-    /**
-     * 账户余额
-     */
-    private BigDecimal balance;
 }

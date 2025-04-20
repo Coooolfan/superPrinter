@@ -27,9 +27,10 @@ public class PrintOrder {
     private Long userId;
 
     /**
-     * 文件ID
+     * 文件数组
+     * 逗号分隔的文件ID列表
      */
-    private Long fileId;
+    private String fileIds;
 
     /**
      * 打印机ID
@@ -49,12 +50,12 @@ public class PrintOrder {
     /**
      * 是否彩色打印：0-黑白，1-彩色
      */
-    private Integer isColor;
+    private Integer colorful;
 
     /**
      * 是否双面打印：0-单面，1-双面
      */
-    private Integer isDoubleSided;
+    private Integer doubleSided;
 
     /**
      * 订单状态：CREATED,PAID,PROCESSING,READY_FOR_PICKUP,COMPLETED,CANCELLED
@@ -63,6 +64,7 @@ public class PrintOrder {
 
     /**
      * 订单金额
+     * 异步计算
      */
     private BigDecimal amount;
 
