@@ -23,7 +23,7 @@ import static com.coooolfan.superprinter.config.RedisConfig.PREFIX_IDEMPOTENT_CO
 @RequiredArgsConstructor
 public class PageCounter {
 
-    private final RedisTemplate<String, Integer> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final RabbitTemplate rabbitTemplate;
     
     private static final int MAX_RETRY_COUNT = 3;

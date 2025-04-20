@@ -17,107 +17,121 @@ import java.util.List;
  * 打印机资源服务实现类
  */
 @Service
-public class PrinterResourceService extends ServiceImpl<PrinterResourceMapper, PrinterResource>
-                  {
+public class PrinterResourceService extends ServiceImpl<PrinterResourceMapper, PrinterResource> {
 
-        @Transactional(rollbackFor = Exception.class)
-        public PrinterResource addPrinter(PrinterResource printerResource) {
-                // 参数校验
-                if (printerResource == null) {
-                        throw new BusinessException("打印机资源信息不能为空");
-                }
-                if (printerResource.getPrinterName() == null || printerResource.getPrinterName().trim().isEmpty()) {
-                        throw new BusinessException("打印机名称不能为空");
-                }
-                if (printerResource.getPaperCount() == null || printerResource.getPaperCount() < 0) {
-                        throw new BusinessException("纸张数量不能为负数");
-                }
+    private static final PrinterResource cheapPrinter = new PrinterResource
+            (0L,
+                    "特惠打印机",
+                    PrinterStatus.ONLINE.getCode(),
+                    10,
+                    false,
+                    false, "A4",
+                    0,
+                    LocalDateTime.now(),
+                    LocalDateTime.now()
+            );
 
-                // 设置默认值
-                printerResource.setStatus(PrinterStatus.ONLINE.getCode());
-                printerResource.setVersion(0);
-                printerResource.setCreateTime(LocalDateTime.now());
-                printerResource.setUpdateTime(LocalDateTime.now());
 
-                // 保存打印机资源
-                boolean success = save(printerResource);
-                if (!success) {
-                        throw new BusinessException("添加打印机资源失败");
-                }
-
-                return printerResource;
+    @Transactional(rollbackFor = Exception.class)
+    public PrinterResource addPrinter(PrinterResource printerResource) {
+        // 参数校验
+        if (printerResource == null) {
+            throw new BusinessException("打印机资源信息不能为空");
+        }
+        if (printerResource.getPrinterName() == null || printerResource.getPrinterName().trim().isEmpty()) {
+            throw new BusinessException("打印机名称不能为空");
+        }
+        if (printerResource.getPaperCount() == null || printerResource.getPaperCount() < 0) {
+            throw new BusinessException("纸张数量不能为负数");
         }
 
-        @Transactional(rollbackFor = Exception.class)
-        public MessageResponse updatePrinter(PrinterResource printerResource) {
-                // 参数校验
-                if (printerResource == null || printerResource.getPrinterId() == null) {
-                        throw new BusinessException("打印机资源信息不能为空");
-                }
-                if (printerResource.getPrinterName() != null && printerResource.getPrinterName().trim().isEmpty()) {
-                        throw new BusinessException("打印机名称不能为空");
-                }
-                if (printerResource.getPaperCount() != null && printerResource.getPaperCount() < 0) {
-                        throw new BusinessException("纸张数量不能为负数");
-                }
+        // 设置默认值
+        printerResource.setStatus(PrinterStatus.ONLINE.getCode());
+        printerResource.setVersion(0);
+        printerResource.setCreateTime(LocalDateTime.now());
+        printerResource.setUpdateTime(LocalDateTime.now());
 
-                // 检查打印机是否存在
-                PrinterResource existingPrinter = getById(printerResource.getPrinterId());
-                if (existingPrinter == null) {
-                        throw new BusinessException("打印机资源不存在");
-                }
-
-                // 更新打印机资源
-                printerResource.setUpdateTime(LocalDateTime.now());
-                boolean success = updateById(printerResource);
-                if (!success) {
-                        throw new BusinessException("更新打印机资源失败");
-                }
-
-                return new MessageResponse("更新打印机资源成功");
+        // 保存打印机资源
+        boolean success = save(printerResource);
+        if (!success) {
+            throw new BusinessException("添加打印机资源失败");
         }
 
-        @Transactional(rollbackFor = Exception.class)
-        public MessageResponse deletePrinter(Long printerId) {
-                // 参数校验
-                if (printerId == null) {
-                        throw new BusinessException("打印机ID不能为空");
-                }
+        return printerResource;
+    }
 
-                // 检查打印机是否存在
-                PrinterResource existingPrinter = getById(printerId);
-                if (existingPrinter == null) {
-                        throw new BusinessException("打印机资源不存在");
-                }
-
-                // 删除打印机资源
-                boolean success = removeById(printerId);
-                if (!success) {
-                        throw new BusinessException("删除打印机资源失败");
-                }
-
-                return new MessageResponse("删除打印机资源成功");
+    @Transactional(rollbackFor = Exception.class)
+    public MessageResponse updatePrinter(PrinterResource printerResource) {
+        // 参数校验
+        if (printerResource == null || printerResource.getPrinterId() == null) {
+            throw new BusinessException("打印机资源信息不能为空");
+        }
+        if (printerResource.getPrinterName() != null && printerResource.getPrinterName().trim().isEmpty()) {
+            throw new BusinessException("打印机名称不能为空");
+        }
+        if (printerResource.getPaperCount() != null && printerResource.getPaperCount() < 0) {
+            throw new BusinessException("纸张数量不能为负数");
         }
 
-        public PrinterResource getPrinter(Long printerId) {
-                // 参数校验
-                if (printerId == null) {
-                        throw new BusinessException("打印机ID不能为空");
-                }
-
-                // 查询打印机资源
-                PrinterResource printerResource = getById(printerId);
-                if (printerResource == null) {
-                        throw new BusinessException("打印机资源不存在");
-                }
-
-                return printerResource;
+        // 检查打印机是否存在
+        PrinterResource existingPrinter = getById(printerResource.getPrinterId());
+        if (existingPrinter == null) {
+            throw new BusinessException("打印机资源不存在");
         }
 
-        public List<PrinterResource> getAllPrinters() {
-                // 查询所有打印机资源
-                LambdaQueryWrapper<PrinterResource> queryWrapper = new LambdaQueryWrapper<>();
-                queryWrapper.orderByDesc(PrinterResource::getUpdateTime);
-                return list(queryWrapper);
+        // 更新打印机资源
+        printerResource.setUpdateTime(LocalDateTime.now());
+        boolean success = updateById(printerResource);
+        if (!success) {
+            throw new BusinessException("更新打印机资源失败");
         }
+
+        return new MessageResponse("更新打印机资源成功");
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public MessageResponse deletePrinter(Long printerId) {
+        // 参数校验
+        if (printerId == null) {
+            throw new BusinessException("打印机ID不能为空");
+        }
+
+        // 检查打印机是否存在
+        PrinterResource existingPrinter = getById(printerId);
+        if (existingPrinter == null) {
+            throw new BusinessException("打印机资源不存在");
+        }
+
+        // 删除打印机资源
+        boolean success = removeById(printerId);
+        if (!success) {
+            throw new BusinessException("删除打印机资源失败");
+        }
+
+        return new MessageResponse("删除打印机资源成功");
+    }
+
+    public PrinterResource getPrinter(Long printerId) {
+        // 参数校验
+        if (printerId == null) {
+            throw new BusinessException("打印机ID不能为空");
+        }
+
+        // 查询打印机资源
+        PrinterResource printerResource = getById(printerId);
+        if (printerResource == null) {
+            throw new BusinessException("打印机资源不存在");
+        }
+
+        return printerResource;
+    }
+
+    public List<PrinterResource> getAllPrinters() {
+        // 查询所有打印机资源
+        LambdaQueryWrapper<PrinterResource> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.orderByDesc(PrinterResource::getUpdateTime);
+        List<PrinterResource> printerResourceList = list(queryWrapper);
+        printerResourceList.addFirst(cheapPrinter);
+        return printerResourceList;
+    }
 }

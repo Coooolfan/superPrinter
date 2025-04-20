@@ -1,9 +1,14 @@
 package com.coooolfan.superprinter.config;
 
+import com.coooolfan.superprinter.vo.message.FilePageCountMessage;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.DefaultJackson2JavaTypeMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,12 +41,42 @@ public class RabbitMQConfig {
     public static final String ORDER_PROCESS_ROUTING_KEY = "order.process";
 
     /**
+     * 自定义ObjectMapper，为Jackson2JsonMessageConverter提供序列化和反序列化支持
+     */
+    @Bean
+    public ObjectMapper rabbitObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return objectMapper;
+    }
+
+    /**
+     * 配置消息转换器，处理消息的序列化和反序列化
+     */
+    @Bean
+    public MessageConverter jsonMessageConverter(ObjectMapper rabbitObjectMapper) {
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter(rabbitObjectMapper);
+
+        // 配置类型映射器
+        DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
+        typeMapper.setTrustedPackages("*");  // 信任所有包
+
+        // 配置特定类型的映射
+        Map<String, Class<?>> idClassMapping = new HashMap<>();
+        idClassMapping.put(FilePageCountMessage.class.getName(), FilePageCountMessage.class);
+        typeMapper.setIdClassMapping(idClassMapping);
+
+        converter.setJavaTypeMapper(typeMapper);
+        return converter;
+    }
+
+    /**
      * 配置RabbitTemplate，使用JSON序列化消息
      */
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter jsonMessageConverter) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(jsonMessageConverter);
         return rabbitTemplate;
     }
 

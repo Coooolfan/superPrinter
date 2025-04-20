@@ -83,7 +83,10 @@ export const updatePrinter = (printerId: number, printerData: PrinterResource) =
   return request<{ message: string }>({
     url: `/api/printer/${printerId}`,
     method: 'put',
-    data: printerData,
+    data: {
+      ...printerData,
+      printerId: undefined,
+    },
   })
 }
 

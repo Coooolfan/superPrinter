@@ -91,6 +91,12 @@
             <artifactId>minio</artifactId>
             <version>8.5.17</version>
         </dependency>
+        
+        <!-- Java 8 日期时间API的Jackson支持 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

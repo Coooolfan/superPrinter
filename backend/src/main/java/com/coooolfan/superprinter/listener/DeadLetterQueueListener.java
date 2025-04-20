@@ -32,7 +32,8 @@ public class DeadLetterQueueListener {
     public void processFilePageCountDeadLetter(Message message) throws IOException {
         try {
             // 转换消息内容
-            FilePageCountMessage filePageCountMessage = (FilePageCountMessage) converter.fromMessage(message, FilePageCountMessage.class);
+            FilePageCountMessage filePageCountMessage =
+                    (FilePageCountMessage) converter.fromMessage(message, FilePageCountMessage.class);
             
             // 计算消息在队列中的存活时间
             long currentTime = Instant.now().toEpochMilli();
@@ -46,13 +47,14 @@ public class DeadLetterQueueListener {
             );
             
             // 记录详细的死信消息日志
-            log.error("【死信队列警告】文件页数统计任务进入死信队列：\n" +
-                    "Token: {}\n" +
-                    "文件列表: {}\n" +
-                    "重试次数: {}\n" +
-                    "消息创建时间: {}\n" +
-                    "消息生存时间: {}秒\n" +
-                    "可能原因: {}", 
+            log.error("""
+                            【死信队列警告】文件页数统计任务进入死信队列：
+                            Token: {}
+                            文件列表: {}
+                            重试次数: {}
+                            消息创建时间: {}
+                            消息生存时间: {}秒
+                            可能原因: {}""",
                     filePageCountMessage.getToken(),
                     filePageCountMessage.getFileIds(),
                     filePageCountMessage.getRetryCount(),

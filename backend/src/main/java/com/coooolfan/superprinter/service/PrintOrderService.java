@@ -7,6 +7,7 @@ import com.coooolfan.superprinter.entity.PrintOrder;
 import com.coooolfan.superprinter.mapper.PrintOrderMapper;
 import com.coooolfan.superprinter.vo.OrderPreTokenVO;
 import com.coooolfan.superprinter.vo.message.FilePageCountMessage;
+import com.coooolfan.superprinter.vo.response.OrderPreBalanceResponse;
 import com.coooolfan.superprinter.vo.response.OrderPreTokenResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +27,7 @@ import static com.coooolfan.superprinter.config.RedisConfig.PREFIX_IDEMPOTENT_CO
 @Service
 @AllArgsConstructor
 public class PrintOrderService extends ServiceImpl<PrintOrderMapper, PrintOrder> implements IService<PrintOrder> {
-    private final RedisTemplate<String, Integer> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final RabbitTemplate rabbitTemplate;
 
     public OrderPreTokenResponse getOrderPreToken(OrderPreTokenVO vo) {
@@ -50,5 +52,11 @@ public class PrintOrderService extends ServiceImpl<PrintOrderMapper, PrintOrder>
         );
 
         return new OrderPreTokenResponse(token);
+    }
+
+    public OrderPreBalanceResponse getOrderPreBalance(String uuid) {
+        // 从Redis中获取对应的文件总页数
+        Integer pageCount =(Integer) redisTemplate.opsForValue().get(PREFIX_IDEMPOTENT_COUNT + uuid);
+        return new OrderPreBalanceResponse(Objects.requireNonNullElse(pageCount, -1));
     }
 }
