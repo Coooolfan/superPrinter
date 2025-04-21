@@ -41,7 +41,7 @@
                     <van-tag v-if="printer.supportColor" type="success" plain>彩色</van-tag>
                     <van-tag v-else class="bg-black text-white border-black">黑白</van-tag>
                     <van-tag v-if="printer.supportDuplex" type="warning" plain>双面</van-tag>
-                    <van-tag v-else type="info" plain>单面</van-tag>
+                    <van-tag v-else type="primary" plain>单面</van-tag>
                 </div>
             </div>
         </div>

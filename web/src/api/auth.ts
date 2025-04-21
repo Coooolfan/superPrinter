@@ -10,7 +10,7 @@ interface RegisterParams {
   password: string
 }
 
-export const login = (data: LoginParams) => {
+export function login(data: LoginParams) {
   return request({
     url: '/api/user/login',
     method: 'post',
@@ -18,7 +18,7 @@ export const login = (data: LoginParams) => {
   })
 }
 
-export const register = (data: RegisterParams) => {
+export function register(data: RegisterParams) {
   return request({
     url: '/api/user/register',
     method: 'post',
@@ -26,7 +26,7 @@ export const register = (data: RegisterParams) => {
   })
 }
 
-export const info = () => {
+export function info() {
   return request({
     url: '/api/user/info',
     method: 'get',

@@ -110,13 +110,13 @@ const filteredPrinters = computed(() => {
 const getPrinterStatusTag = (status: string) => {
   switch (status) {
     case 'ONLINE':
-      return { type: 'success', text: '在线' }
+      return { type: 'success' as const, text: '在线' }
     case 'OFFLINE':
-      return { type: 'danger', text: '离线' }
+      return { type: 'danger' as const, text: '离线' }
     case 'OUT_OF_PAPER':
-      return { type: 'warning', text: '缺纸' }
+      return { type: 'warning' as const, text: '缺纸' }
     default:
-      return { type: 'default', text: '未知' }
+      return { type: 'default' as const, text: '未知' }
   }
 }
 

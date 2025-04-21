@@ -45,7 +45,7 @@ export interface PrinterResource {
  * 获取单个打印机资源信息
  * @param printerId 打印机ID
  */
-export const getPrinter = (printerId: number) => {
+export function getPrinter(printerId: number) {
   return request<PrinterResource>({
     url: `/api/printer/${printerId}`,
     method: 'get',
@@ -55,8 +55,8 @@ export const getPrinter = (printerId: number) => {
 /**
  * 获取所有打印机资源列表
  */
-export const getPrinterList = () => {
-  return request<PrinterResource[]>({
+export function getPrinterList(): Promise<PrinterResource[]> {
+  return request({
     url: '/api/printer/list',
     method: 'get',
   })
@@ -66,8 +66,8 @@ export const getPrinterList = () => {
  * 添加打印机资源
  * @param printerData 打印机资源信息
  */
-export const addPrinter = (printerData: PrinterResource) => {
-  return request<PrinterResource>({
+export function addPrinter(printerData: PrinterResource): Promise<PrinterResource> {
+  return request({
     url: '/api/printer',
     method: 'post',
     data: printerData,
@@ -79,7 +79,7 @@ export const addPrinter = (printerData: PrinterResource) => {
  * @param printerId 打印机ID
  * @param printerData 打印机资源信息
  */
-export const updatePrinter = (printerId: number, printerData: PrinterResource) => {
+export function updatePrinter(printerId: number, printerData: PrinterResource) {
   return request<{ message: string }>({
     url: `/api/printer/${printerId}`,
     method: 'put',
@@ -94,8 +94,8 @@ export const updatePrinter = (printerId: number, printerData: PrinterResource) =
  * 删除打印机资源
  * @param printerId 打印机ID
  */
-export const deletePrinter = (printerId: number) => {
-  return request<{ message: string }>({
+export function deletePrinter(printerId: number): Promise<{ message: string }> {
+  return request({
     url: `/api/printer/${printerId}`,
     method: 'delete',
   })
