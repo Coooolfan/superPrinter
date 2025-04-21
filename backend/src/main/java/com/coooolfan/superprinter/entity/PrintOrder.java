@@ -94,8 +94,7 @@ public class PrintOrder {
     private LocalDateTime createTime;
 
     /**
-     * 创建日
-     *
+     * 更新时间
      */
     private LocalDateTime updateTime;
 }
