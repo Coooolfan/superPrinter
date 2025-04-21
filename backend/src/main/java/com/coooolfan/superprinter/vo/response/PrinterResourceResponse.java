@@ -53,11 +53,6 @@ public class PrinterResourceResponse {
     private String paperType;
 
     /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
      * 更新时间
      */
     private LocalDateTime updateTime;
@@ -74,7 +69,6 @@ public class PrinterResourceResponse {
         response.setSupportDuplex(printerResource.getSupportDuplex());
         response.setPaperType(printerResource.getPaperType());
         response.setPaperCount(printerResource.getPaperCount());
-        response.setCreateTime(printerResource.getCreateTime());
         response.setUpdateTime(printerResource.getUpdateTime());
     }
 }

@@ -16,7 +16,7 @@ CREATE TABLE file_info
     user_id       BIGINT       NOT NULL COMMENT '上传用户ID',
     original_name VARCHAR(255) NOT NULL COMMENT '原始文件名',
     stored_name   VARCHAR(255) NOT NULL COMMENT 'MinIO中的对象名',
-    file_type     VARCHAR(255)  NOT NULL COMMENT '文件类型',
+    file_type     VARCHAR(255) NOT NULL COMMENT '文件类型',
     file_size     BIGINT       NOT NULL COMMENT '文件大小（字节）',
     page_count    INT                   DEFAULT NULL COMMENT '页数（异步计算）',
     upload_time   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间',
@@ -32,41 +32,44 @@ CREATE TABLE printer_resource
     status         VARCHAR(20)  NOT NULL COMMENT '打印机状态：ONLINE,OFFLINE,OUT_OF_PAPER',
     paper_count    INT          NOT NULL DEFAULT 0 COMMENT 'A纸张数量',
     support_color  TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '支持彩色打印 (0: 不支持, 1: 支持)',
-    support_duplex TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '支持双面打印 (0: 不支持, 1: 支持)', 
-    paper_type     VARCHAR(255) NOT NULL DEFAULT '' COMMENT '支持的纸张类型 (例如：A4,A5,Letter,Legal 以逗号分隔)', 
+    support_duplex TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '支持双面打印 (0: 不支持, 1: 支持)',
+    paper_type     VARCHAR(255) NOT NULL DEFAULT '' COMMENT '支持的纸张类型 (例如：A4,A5,Letter,Legal 以逗号分隔)',
     version        INT          NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
-    create_time    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_day     BIGINT       NOT NULL DEFAULT 0 COMMENT '更新时间,用于刷新特惠打印机余额',
     update_time    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_status (status) -- 保留状态索引
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='打印机资源表';
 
+INSERT INTO printer_resource (printer_id, printer_name, status, paper_count, support_color, support_duplex, paper_type,
+                              version, update_day, , update_time)
+VALUES (0, '特惠打印机', 'ONLINE', 10, 0, 0, 'A4', 0, 0, NOW());
+
 CREATE TABLE print_order
 (
-    order_id     BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '订单ID',
-    user_id      BIGINT         NOT NULL COMMENT '用户ID',
-    file_id      BIGINT         NOT NULL COMMENT '文件ID',
-    printer_id   BIGINT         NOT NULL COMMENT '打印机ID',
-    copies       INT            NOT NULL DEFAULT 1 COMMENT '打印份数',
-    paper_type   VARCHAR(50)    NOT NULL COMMENT '纸张类型',
-    colorful     TINYINT(1)     NOT NULL DEFAULT 0 COMMENT '是否彩色打印：0-黑白，1-彩色',
-    double_sided TINYINT(1)     NOT NULL DEFAULT 0 COMMENT '是否双面打印：0-单面，1-双面',
-    status       VARCHAR(20)    NOT NULL COMMENT '订单状态：CREATED,PAID,PROCESSING,READY_FOR_PICKUP,COMPLETED,CANCELLED',
-    amount       DECIMAL(10, 2) NOT NULL COMMENT '订单金额',
-    pickup_code  VARCHAR(20)             DEFAULT NULL COMMENT '取件码',
-    version      INT            NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
-    create_time  DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    update_time  DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    order_id         BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '订单ID',
+    user_id          BIGINT         NOT NULL COMMENT '用户ID',
+    file_ids         VARCHAR(255)   NOT NULL COMMENT '逗号分隔的文件ID列表',
+    printer_id       BIGINT         NOT NULL COMMENT '打印机ID',
+    copies           INT            NOT NULL DEFAULT 1 COMMENT '打印份数',
+    paper_size       VARCHAR(50)    NOT NULL COMMENT '纸张类型',
+    colorful         TINYINT(1)     NOT NULL DEFAULT 0 COMMENT '是否彩色打印：0-黑白，1-彩色',
+    double_sided     TINYINT(1)     NOT NULL DEFAULT 0 COMMENT '是否双面打印：0-单面，1-双面',
+    status           VARCHAR(20)    NOT NULL COMMENT '订单状态：CREATED,PAID,PROCESSING,READY_FOR_PICKUP,COMPLETED,CANCELLED',
+    page_count       INT            NOT NULL DEFAULT 0 COMMENT '单份纸张数量',
+    total_page_count INT            NOT NULL DEFAULT 0 COMMENT '订单总页数',
+    amount           DECIMAL(10, 2) NOT NULL COMMENT '订单金额',
+    pickup_code      VARCHAR(20)             DEFAULT NULL COMMENT '取件码',
+    version          INT            NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
+    create_time      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     FOREIGN KEY (user_id) REFERENCES user (user_id),
-    FOREIGN KEY (file_id) REFERENCES file_info (file_id),
     FOREIGN KEY (printer_id) REFERENCES printer_resource (printer_id),
     INDEX idx_user_id (user_id),
     INDEX idx_status (status),
     INDEX idx_pickup_code (pickup_code)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='打印订单表';
-
-
 
 CREATE TABLE order_status_log
 (

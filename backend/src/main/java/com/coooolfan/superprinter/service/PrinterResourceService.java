@@ -6,6 +6,7 @@ import com.coooolfan.superprinter.entity.PrinterResource;
 import com.coooolfan.superprinter.enums.PrinterStatus;
 import com.coooolfan.superprinter.exception.BusinessException;
 import com.coooolfan.superprinter.mapper.PrinterResourceMapper;
+import com.coooolfan.superprinter.util.DateUtil;
 import com.coooolfan.superprinter.vo.response.MessageResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,19 +19,6 @@ import java.util.List;
  */
 @Service
 public class PrinterResourceService extends ServiceImpl<PrinterResourceMapper, PrinterResource> {
-
-    private static final PrinterResource cheapPrinter = new PrinterResource
-            (0L,
-                    "特惠打印机",
-                    PrinterStatus.ONLINE.getCode(),
-                    10,
-                    false,
-                    false, "A4",
-                    0,
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-            );
-
 
     @Transactional(rollbackFor = Exception.class)
     public PrinterResource addPrinter(PrinterResource printerResource) {
@@ -48,7 +36,7 @@ public class PrinterResourceService extends ServiceImpl<PrinterResourceMapper, P
         // 设置默认值
         printerResource.setStatus(PrinterStatus.ONLINE.getCode());
         printerResource.setVersion(0);
-        printerResource.setCreateTime(LocalDateTime.now());
+        printerResource.setUpdateDay(DateUtil.getCurrentYYYYMMDD());
         printerResource.setUpdateTime(LocalDateTime.now());
 
         // 保存打印机资源
@@ -127,11 +115,23 @@ public class PrinterResourceService extends ServiceImpl<PrinterResourceMapper, P
     }
 
     public List<PrinterResource> getAllPrinters() {
+        // 使用（update_day的不等于条件）更新特惠打印机资源
+        // UPDATE printer_resource SET paper_count=10 WHERE printer_id=0 AND update_day <> ？;
+        // 这里的update_day是当前日,即DateUtil.getCurrentYYYYMMDD()的值，printer_id是特惠打印机的ID,即0
+        // 幂等更新，如果请求量太大，也可以直接用定时任务更新，而不是每次查询更新
+
+        Long currentYYYYMMDD = DateUtil.getCurrentYYYYMMDD();
+
+        this.update()
+                .set("paper_count", 10)
+                .set("update_day", currentYYYYMMDD)
+                .ne("update_day", currentYYYYMMDD)
+                .eq("printer_id", 0)
+                .update();
+
         // 查询所有打印机资源
         LambdaQueryWrapper<PrinterResource> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.orderByDesc(PrinterResource::getUpdateTime);
-        List<PrinterResource> printerResourceList = list(queryWrapper);
-        printerResourceList.addFirst(cheapPrinter);
-        return printerResourceList;
+        return list(queryWrapper);
     }
 }

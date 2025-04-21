@@ -482,12 +482,13 @@ const createOrder = () => {
 
   // 在真实场景中，这里会调用API创建订单
   console.log('创建订单:', {
-    printerId: selectedPrinter.value,
-    paperSize: printSettings.value.paperSize,
-    color: printSettings.value.color === 'color',
-    copies: printSettings.value.copies,
-    duplex: printSettings.value.duplex, // 添加双面打印选项
-    remark: remark.value,
+    printerId: selectedPrinter.value, // 选择的打印机ID
+    fileIds: orderFileStore.getOrderFile(), // 上传的文件IDs
+    paperSize: printSettings.value.paperSize, // 纸张大小
+    color: printSettings.value.color === 'color', // 是否彩色打印
+    copies: printSettings.value.copies, // 打印份数
+    duplex: printSettings.value.duplex, // 是否双面打印
+    remark: remark.value, // 备注信息
     token: orderPreToken.value, // 使用预处理token
   })
 

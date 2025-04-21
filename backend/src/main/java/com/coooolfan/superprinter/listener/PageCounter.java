@@ -79,7 +79,14 @@ public class PageCounter {
              * 这种情况下直接set即可，超时时间会被重置，无副作用
              */
             String redisKey = PREFIX_IDEMPOTENT_COUNT + message.getToken();
-            redisTemplate.opsForValue().set(redisKey, totalPages, 5, TimeUnit.MINUTES);
+            // 将页数更新到 Redis Hash 中，保留 fileIds
+            redisTemplate.opsForHash().put(redisKey, "pageCount", String.valueOf(totalPages));
+            // 确保 fileIds 已经存在，如果需要可以再次存储
+            if (!redisTemplate.opsForHash().hasKey(redisKey, "fileIds")) {
+                redisTemplate.opsForHash().put(redisKey, "fileIds", message.getFileIds());
+            }
+            // 更新过期时间
+            redisTemplate.expire(redisKey, 5, TimeUnit.MINUTES);
             log.info("更新Redis中的文件页数统计结果，token：{}，总页数：{}", message.getToken(), totalPages);
             
             // 5. 完成消费

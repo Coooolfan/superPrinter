@@ -45,7 +45,7 @@ public class PrintOrder {
     /**
      * 纸张类型
      */
-    private String paperType;
+    private String paperSize;
 
     /**
      * 是否彩色打印：0-黑白，1-彩色
@@ -63,8 +63,17 @@ public class PrintOrder {
     private String status;
 
     /**
+     * 单份纸张数量
+     */
+    private Integer pageCount;
+
+    /**
+     * 订单总页数
+     */
+    private Integer totalPageCount;
+
+    /**
      * 订单金额
-     * 异步计算
      */
     private BigDecimal amount;
 
@@ -85,7 +94,8 @@ public class PrintOrder {
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * 创建日
+     *
      */
     private LocalDateTime updateTime;
 }

@@ -63,9 +63,9 @@ public class PrinterResource {
     private Integer version;
 
     /**
-     * 创建时间
+     * 更新时间,用于刷新特惠打印机余额
      */
-    private LocalDateTime createTime;
+    private Long updateDay;
 
     /**
      * 更新时间
