@@ -16,7 +16,6 @@ import com.coooolfan.superprinter.vo.response.OrderPreTokenResponse;
 import com.coooolfan.superprinter.vo.response.PrintOrderCreateResponse;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -129,7 +128,7 @@ public class PrintOrderService extends ServiceImpl<PrintOrderMapper, PrintOrder>
             boolean update = printerResourceService.update()
                     .set("paper_count = paper_count - ?", pageCount)
                     .eq("printer_id", vo.getPrinterId())
-                    .gt("paper_count", pageCount)
+                    .ge("paper_count", pageCount)
                     .update();
 
             if (!update) {
