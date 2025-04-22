@@ -61,7 +61,6 @@ public class UserService extends ServiceImpl<UserMapper, User>  {
 
         // 创建用户
         User user = new User();
-        user.setUserId(idGenerator.nextId());
         user.setUsername(registerVO.getUsername().toLowerCase());
         user.setPassword(passwordUtils.encode(registerVO.getPassword()));
         user.setRole(UserRole.USER.getCode());

@@ -14,6 +14,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     public static final String PREFIX_IDEMPOTENT_COUNT = "idempotent:";
+    public static final String PREFIX_LOCK_PRINT_ORDER = "lock:printOrder:";
 
     /**
      * 配置自定义RedisTemplate，使用JSON序列化
