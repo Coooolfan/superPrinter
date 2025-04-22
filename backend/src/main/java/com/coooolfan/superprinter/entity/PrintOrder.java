@@ -94,6 +94,11 @@ public class PrintOrder {
     private LocalDateTime createTime;
 
     /**
+     * 创建日yyyyMMdd（加快索引判断，冗余字段）
+     */
+    private Long createDay;
+
+    /**
      * 更新时间
      */
     private LocalDateTime updateTime;

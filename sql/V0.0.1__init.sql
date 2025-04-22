@@ -61,6 +61,7 @@ CREATE TABLE print_order
     amount           DECIMAL(10, 2) NOT NULL COMMENT '订单金额',
     pickup_code      VARCHAR(20)             DEFAULT NULL COMMENT '取件码',
     version          INT            NOT NULL DEFAULT 0 COMMENT '乐观锁版本号',
+    create_day       BIGINT         NOT NULL DEFAULT 0 COMMENT '创建日yyyyMMdd（加快索引判断，冗余字段）',
     create_time      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     update_time      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     FOREIGN KEY (user_id) REFERENCES user (user_id),

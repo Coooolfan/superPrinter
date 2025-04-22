@@ -13,7 +13,9 @@ class BackendApplicationTests {
 
     @Test
     void contextLoads() throws Exception {
-        System.out.println(minioUtil.getPresignedUploadUrl("test.txt", 6000));
+//        System.out.println(minioUtil.getPresignedUploadUrl("test.txt", 6000));
+//        System.out.println(minioUtil.listAllFile());
+        System.out.println(minioUtil.getPresignedDownloadUrl("test.txt", 6000));
     }
 
 }
