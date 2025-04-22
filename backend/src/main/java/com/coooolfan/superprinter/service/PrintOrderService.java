@@ -76,8 +76,8 @@ public class PrintOrderService extends ServiceImpl<PrintOrderMapper, PrintOrder>
 
     public PrintOrderCreateResponse createOrder(PrintOrderCreateVO vo) {
         // TODO: 幂等、分布式锁、乐观锁
-        // 0. 计算分布式锁的key
-        // 1. 操作Redis，使用Lua脚本完成（幂等token检查、分布式锁）(需要传入vo中的token，锁的key)
+        // 0. 计算分布式锁的key和value
+        // 1. 操作Redis，使用Lua脚本完成（幂等token检查、分布式锁）(需要传入vo中的token，锁的key和value)
         // 1.1 如果页数计算还未完成，让用户再等等，别急
         // 1.2 如果幂等检查失败或者分布式锁获取失败提示请求过于繁忙
         // 2. 操作数据库，扣减打印机剩余纸张（使用类似于乐观锁的 paperCount > ? 条件）
