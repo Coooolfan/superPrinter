@@ -53,7 +53,7 @@ public class PrintOrderService extends ServiceImpl<PrintOrderMapper, PrintOrder>
         redisTemplate.opsForHash().put(redisKey, "fileIds", vo.getFileIds());
         // 初始页数设为-1，后续由异步任务更新
         // idempotent:{token}:pageCount
-        redisTemplate.opsForHash().put(redisKey, "pageCount", "-1");
+        redisTemplate.opsForHash().put(redisKey, "pageCount", "-2");
         redisTemplate.expire(redisKey, 5, TimeUnit.MINUTES);
 
         // 投递页数统计任务
@@ -99,7 +99,8 @@ public class PrintOrderService extends ServiceImpl<PrintOrderMapper, PrintOrder>
         log.info("开始创建订单, userId={}, printerId={}, token={}", userId, vo.getPrinterId(), vo.getToken());
 
         // 1. 操作Redis，使用Lua脚本完成（幂等token检查、分布式锁）(需要传入vo中的token，锁的key和value)
-        int pageCount = redisLockUtil.createOrderLock(idempotentKey, lockKey, lockValue);
+        String pageCountStr = redisLockUtil.createOrderLock(idempotentKey, lockKey, lockValue);
+        int pageCount = Integer.parseInt(pageCountStr);
         // 1.1 如果页数计算还未完成，让用户再等等，别急
         // 1.2 如果幂等检查失败或者分布式锁获取失败提示请求过于繁忙        
         if (pageCount <= 0) {
@@ -126,7 +127,7 @@ public class PrintOrderService extends ServiceImpl<PrintOrderMapper, PrintOrder>
             // 2.2 扣减对应打印机的纸张数量
             log.info("开始扣减打印机纸张, printerId={}, pageCount={}", vo.getPrinterId(), pageCount);
             boolean update = printerResourceService.update()
-                    .set("paper_count = paper_count - ?", pageCount)
+                    .setSql("paper_count = paper_count - " + pageCount)
                     .eq("printer_id", vo.getPrinterId())
                     .ge("paper_count", pageCount)
                     .update();
