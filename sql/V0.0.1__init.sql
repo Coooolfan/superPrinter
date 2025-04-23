@@ -42,7 +42,7 @@ CREATE TABLE printer_resource
   DEFAULT CHARSET = utf8mb4 COMMENT ='打印机资源表';
 
 INSERT INTO printer_resource (printer_id, printer_name, status, paper_count, support_color, support_duplex, paper_type,
-                              version, update_day, , update_time)
+                              version, update_day, update_time)
 VALUES (0, '特惠打印机', 'ONLINE', 10, 0, 0, 'A4', 0, 0, NOW());
 
 CREATE TABLE print_order

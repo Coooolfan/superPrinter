@@ -4,7 +4,7 @@
 
 本项目是一个基于 Spring Boot 和 Vue 构建的在线打印服务平台，旨在提供用户线上提交打印任务、线下扫码取件的便捷服务。系统采用前后端分离架构，后端为单体应用，注重分布式环境下的并发控制、数据一致性和系统可靠性。
 
-本项目主要作为技术实践和能力展示，模拟打印店的核心业务流程，重点在于后端架构设计和关键技术点的实现。
+仅做演示需求，模拟打印店的核心业务流程，重点在于后端架构设计和关键技术点的实现。
 
 ## 2. 主要功能
 
@@ -94,11 +94,10 @@ com.coooolfan.printsystem
 *   **请求认证**: 前端请求携带 Token，通过 Sa-Token 过滤器或拦截器进行校验。
 *   **权限控制**: 使用 Sa-Token 提供的注解 (`@SaCheckLogin`, `@SaCheckRole`, `@SaCheckPermission`) 或编程式API在 Controller 或 Service 层进行权限校验。角色和权限信息可存储在数据库中。
 
-### 5.2 分布式唯一ID (雪花算法)
+### 5.2 分布式唯一ID
 
-*   采用标准或改进的雪花算法生成器 (可引入现有库如 `hutool-core` 或自定义实现)。
-*   用于订单号 (`order_id`)、文件ID (`file_id`) 等需要全局唯一且趋势递增的场景。
-*   配置 `workerId` 和 `datacenterId` 以区分不同实例（如果未来扩展）。
+*   雪花ID在此场景下没有必要。
+*   **UUID**: 使用 Java 内置的 `UUID.randomUUID()` 拼接实例id作为唯一ID。仅用于分布式锁的解锁验证。
 
 ### 5.3 分布式锁与幂等性 (Redis + Lua)
 
@@ -107,13 +106,13 @@ com.coooolfan.printsystem
 *   **锁键**: `lock:{业务场景}:{用户ID}:{资源ID}` (例如: `lock:order:create:user123:printer01`)。
 *   **锁值**: 包含唯一标识 (如UUID) 和线程/实例信息，防止误删锁。
 *   **幂等键**: `idempotent:{业务场景}:{请求唯一ID}` (例如: `idempotent:order:create:req-uuid-123`)。
-*   **原子操作**: 使用 **Lua 脚本**将“检查幂等键”和“尝试获取锁 (`SETNX`)”合并为一个原子操作。
-    *   脚本逻辑：先 `GET` 幂等键，如果存在则表示重复请求，直接返回。如果不存在，则尝试 `SETNX` 获取锁。获取成功后，`SET` 幂等键 (标记请求开始处理)。
+*   **原子操作**: 使用 **Lua 脚本**将“检查幂等键”和“尝试获取锁”合并为一个原子操作。
 *   **解锁**: 同样使用 **Lua 脚本**，先 `GET` 锁键，判断锁值是否与当前线程/实例匹配，匹配则 `DEL` 锁键。
-*   **锁超时**: 设置合理的锁过期时间，防止死锁。**本项目简化，暂不实现锁自动续期**。
+*   **锁超时**: 设置合理的锁过期时间，防止死锁。
 *   **应用**: 在创建订单、扣减资源等关键操作前获取锁。
 
-### 5.4 乐观锁 (数据库 Version 字段)
+
+### ~~5.4 乐观锁 (数据库 Version 字段)~~
 
 *   **目的**: 处理高并发下对同一数据行的更新冲突，主要用于打印机资源 (如纸张数量) 的扣减。
 *   **实现**: 在 `printer_resource` 表中增加 `version` 字段 (整型，默认0)。
@@ -139,14 +138,13 @@ com.coooolfan.printsystem
 
 *   **配置**: 在 `application.yml` 中配置 MinIO 的 endpoint, accessKey, secretKey, bucketName。
 *   **功能**:
-    *   **文件上传**: Service 层提供文件上传接口，调用 MinIO Java SDK 将用户文件流上传到指定的 Bucket。文件名建议使用 UUID 或 雪花ID 防止重复。
+    *   **文件上传**: Service 层提供文件上传接口，调用 MinIO Java SDK 使用**预签名URL**允许用户直接上传到对象存储。文件名使用 UUID 防止重复。
     *   **文件访问**: 对于需要下载或预览的文件，生成 **预签名URL** (Presigned URL)，提供有时效性的安全访问链接给前端或管理端。
-    *   **生命周期管理**: 可在 MinIO 控制台或通过 SDK 配置 Bucket 的生命周期规则，例如自动删除 N 天前的临时文件或已完成订单的文件。
-    *   **(可选) 分片上传**: 对于大文件，可实现分片上传逻辑，提高上传稳定性和效率。
+    *   **生命周期管理**: 定时任务自动删除 N 天前的临时文件或已完成订单的文件。
 
 ### 5.7 异步任务处理 (RabbitMQ)
 
-*   **目的**: 将非核心、耗时的任务 (如文档页数统计、格式转换 - 如果实现) 异步化，提高主流程响应速度。
+*   **目的**: 将非核心、耗时的任务 (如文档页数统计) 异步化，提高主流程响应速度。
 *   **配置**:
     *   定义 Queue, Exchange (如 Direct Exchange), Binding。
     *   配置生产者确认 (`publisher-confirms`) 和消费者确认 (`consumer-acknowledgements`，设置为手动 `manual`)。
@@ -177,11 +175,86 @@ com.coooolfan.printsystem
 
 ## 6. 数据库设计 (核心表)
 
-*   `t_user` (用户信息表): `user_id`, `username`, `password`, `balance`, `create_time`, `update_time` ...
-*   `t_file_info` (文件信息表): `file_id`, `user_id`, `original_name`, `stored_name` (MinIO中的对象名), `file_type`, `file_size`, `page_count` (异步计算), `upload_time` ...
-*   `t_print_order` (打印订单表): `order_id`, `user_id`, `file_id`, `printer_id` (如果关联特定打印机), `copies`, `paper_type`, `is_color`, `is_double_sided`, `status` (状态机), `amount`, `pickup_code`, `version` (乐观锁), `create_time`, `update_time` ...
-*   `t_printer_resource` (打印机资源表 - 模拟): `printer_id`, `printer_name`, `status` (在线/离线/缺纸), `paper_count`, `version` (乐观锁), `update_time` ...
-*   `(可选) t_order_status_log` (订单状态流转日志): `log_id`, `order_id`, `from_status`, `to_status`, `operator`, `operate_time`, `remark` ...
+```mermaid
+erDiagram
+    user ||--o{ file_info : uploads
+    user ||--o{ print_order : places
+    file_info ||--o{ print_order : included_in
+    printer_resource ||--o{ print_order : processes
+    print_order ||--o{ order_status_log : generates
+
+    user {
+        BIGINT user_id PK "用户ID"
+        VARCHAR username "用户名"
+        VARCHAR password "密码(加密存储)"
+        INT role "用户角色"
+        DATETIME create_time "创建时间"
+        DATETIME update_time "更新时间"
+    }
+
+    file_info {
+        BIGINT file_id PK "文件ID"
+        BIGINT user_id FK "上传用户ID"
+        VARCHAR original_name "原始文件名"
+        VARCHAR stored_name "MinIO中的对象名"
+        VARCHAR file_type "文件类型"
+        BIGINT file_size "文件大小(字节)"
+        INT page_count "页数(异步计算)"
+        DATETIME upload_time "上传时间"
+    }
+
+    printer_resource {
+        BIGINT printer_id PK "打印机ID"
+        VARCHAR printer_name "打印机名称"
+        VARCHAR status "打印机状态"
+        INT paper_count "纸张数量"
+        TINYINT support_color "支持彩色打印"
+        TINYINT support_duplex "支持双面打印"
+        VARCHAR paper_type "支持的纸张类型"
+        INT version "乐观锁版本号"
+        BIGINT update_day "更新时间(刷新特惠打印机余额)"
+        DATETIME update_time "更新时间"
+    }
+
+    print_order {
+        BIGINT order_id PK "订单ID"
+        BIGINT user_id FK "用户ID"
+        VARCHAR file_ids "逗号分隔的文件ID列表"
+        BIGINT printer_id FK "打印机ID"
+        INT copies "打印份数"
+        VARCHAR paper_size "纸张类型"
+        TINYINT colorful "是否彩色打印"
+        TINYINT double_sided "是否双面打印"
+        VARCHAR status "订单状态"
+        INT page_count "单份纸张数量"
+        INT total_page_count "订单总页数"
+        DECIMAL amount "订单金额"
+        VARCHAR pickup_code "取件码"
+        INT version "乐观锁版本号"
+        BIGINT create_day "创建日yyyyMMdd"
+        DATETIME create_time "创建时间"
+        DATETIME update_time "更新时间"
+    }
+
+    order_status_log {
+        BIGINT log_id PK "日志ID"
+        BIGINT order_id FK "订单ID"
+        VARCHAR from_status "原状态"
+        VARCHAR to_status "目标状态"
+        BIGINT operator "操作人ID"
+        DATETIME operate_time "操作时间"
+        VARCHAR remark "备注"
+    }
+
+    paper_type {
+        BIGINT type_id PK "类型ID"
+        VARCHAR type_name "纸张类型名称"
+        DECIMAL price_per_page "每页单价"
+        TINYINT is_available "是否可用"
+        DATETIME create_time "创建时间"
+        DATETIME update_time "更新时间"
+    }
+```
 
 <!-- 
 ## 7. API 文档
